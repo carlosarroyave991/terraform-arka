@@ -1,0 +1,9 @@
+
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 442042525403.dkr.ecr.us-east-1.amazonaws.com
+
+Paso 1: Subir imágenes a ECR
+# Ejemplo para users service
+docker build -t users .
+docker tag users:latest 442042525403.dkr.ecr.us-east-1.amazonaws.com/users:latest
+docker push 442042525403.dkr.ecr.us-east-1.amazonaws.com/users:latest
+

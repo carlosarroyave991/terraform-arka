@@ -1,0 +1,25 @@
+modules/
+├── iam/                # Roles y permisos
+├── ecr/                # Repositorios de imágenes
+├── vpc/                # Networking y seguridad
+├── ecs/                # Contenedores y servicios
+├── rds/                # Base de datos
+├── lambda/             # Lambdas y funciones
+├── cloudwatch/         # Logs y monitoreo
+└── service-discovery/  # Service Discovery (AWS Cloud Map)
+
+
+ORDEN DE DESPLIEGUE (Dependencias):
+
+1. module "iam"              # Sin dependencias
+2. module "ecr"              # Sin dependencias  
+3. module "vpc"              # Sin dependencias
+4. module "cloudwatch"       # Sin dependencias
+5. module "service_discovery" # Depende de vpc
+6. module "rds"              # Depende de vpc
+7. module "lambda"           # Depende de iam
+8. module "ecs"              # Depende de iam, ecr, vpc, service_discovery
+
+RECURSOS ADICIONALES:
+- aws_sns_topic              # Notificaciones por email
+- aws_sns_topic_subscription # Suscripción a tu email

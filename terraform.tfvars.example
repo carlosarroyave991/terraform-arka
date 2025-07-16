@@ -1,0 +1,19 @@
+# Copia este archivo a terraform.tfvars y completa con tus valores reales
+
+# AWS Configuration
+access_key     = "TU_AWS_ACCESS_KEY"
+secret_key     = "TU_AWS_SECRET_KEY"
+aws_account_id = "TU_AWS_ACCOUNT_ID"
+environment    = "dev"
+
+# Database Configuration
+db_username = "postgres"
+db_password = "TU_DB_PASSWORD"
+db_name     = "postgres"
+db_schema   = "micro"
+
+# JWT Configuration
+jwt_secret_key = "TU_JWT_SECRET_KEY_MUY_LARGA"
+
+# SendGrid Configuration
+sendgrid_api_key = "TU_SENDGRID_API_KEY"

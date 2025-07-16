@@ -1,0 +1,10 @@
+1. Creas el Rol IAM
+   ↓
+2. Le dices "Solo ECS puede usar este rol" (assume_role_policy)
+   ↓  
+3. Le das permisos específicos (policy attachment)
+   ↓
+4. ECS usa el rol para:
+   - Descargar imágenes de ECR
+   - Escribir logs
+   - Gestionar contenedores

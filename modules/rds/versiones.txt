@@ -1,0 +1,6 @@
+Versiones PostgreSQL válidas en AWS:
+15.7
+15.6
+15.5
+14.12
+13.15

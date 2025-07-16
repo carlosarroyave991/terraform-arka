@@ -1,0 +1,10 @@
+Resultado Final:
+Con for_each, este código crea:
+
+1 Cluster: dev-ecs-cluster
+
+2 Task Definitions: dev-users, dev-products, etc.
+
+3 Services: dev-users-service, dev-products-service, etc.
+
+4 Contenedores corriendo: Uno por microservicio

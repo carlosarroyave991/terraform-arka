@@ -1,0 +1,9 @@
+Internet (0.0.0.0/0)
+    ↓
+Security Group App (puertos 8080,8081,8082,8085)
+    ↓
+Aplicaciones
+    ↓
+Security Group Database (puerto 5432, solo desde App SG)
+    ↓
+Base de Datos PostgreSQL
