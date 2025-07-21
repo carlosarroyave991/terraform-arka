@@ -1,0 +1,50 @@
+# azure-pipelines.yml para Infraestructura
+trigger:
+  branches:
+    include:
+      - main                # Dispara on push a main
+  paths:
+    include:
+      - '**/*.tf'          # Sólo si cambian archivos .tf
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  AWS_REGION: us-east-1
+  TF_BACKEND_BUCKET: my-terraform-state-bucket
+  TF_LOCK_TABLE: terraform-locks
+
+stages:
+- stage: Terraform
+  displayName: '🛠️ Terraform Init & Apply'
+  jobs:
+  - job: Apply
+    pool: ubuntu-latest
+    steps:
+    - checkout: self
+
+    - task: AWSCLI@1
+      inputs:
+        awsCredentials: 'aws-terraform-ecr'   # Service Connection AWS
+        regionName: '$(AWS_REGION)'
+
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: '1.5.0'
+
+    - script: |
+        terraform init \
+          -backend-config="bucket=$(TF_BACKEND_BUCKET)" \
+          -backend-config="key=infra.tfstate" \
+          -backend-config="region=$(AWS_REGION)" \
+          -backend-config="dynamodb_table=$(TF_LOCK_TABLE)"
+      workingDirectory: .
+      displayName: 'Terraform Init'
+
+    - script: |
+        terraform apply -auto-approve
+      workingDirectory: .
+      displayName: 'Terraform Apply'
