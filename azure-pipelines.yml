@@ -1,9 +1,10 @@
 # azure-pipelines.yml (repo infra-aws)
+# Pipeline para despliegue automático de infraestructura AWS con Terraform
 
 trigger:
   branches:
     include:
-      - main
+      - clean-main
   paths:
     include:
       - '**/*.tf'
@@ -17,27 +18,49 @@ variables:
   AWS_REGION: us-east-1
   TF_BACKEND_BUCKET: my-terraform-state-bucket
   TF_LOCK_TABLE: terraform-locks
+variable groups:
+  - group: dev-terraform
 
 stages:
   - stage: Terraform
     displayName: 'Terraform Init & Apply'
     jobs:
       - job: Apply
-        pool: ubuntu-latest
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
           # Clonar el repo de infra
           - checkout: self
 
           # Autenticarse en AWS
-          - task: AWSCLI@1
+          - task: AWSShellScript@1
             inputs:
               awsCredentials: 'aws-terraform-ecr'
               regionName: '$(AWS_REGION)'
+              scriptType: 'inline'
+              inlineScript: |
+                aws sts get-caller-identity
+                echo "AWS authentication successful"
 
           # Instalar Terraform
           - task: TerraformInstaller@1
             inputs:
               terraformVersion: '1.5.0'
+
+          # Crear archivo terraform.tfvars
+          - script: |
+              echo "access_key = \"$(AWS_ACCESS_KEY)\"" > terraform.tfvars
+              echo "secret_key = \"$(AWS_SECRET_KEY)\"" >> terraform.tfvars
+              echo "aws_account_id = \"$(AWS_ACCOUNT_ID)\"" >> terraform.tfvars
+              echo "environment = \"dev\"" >> terraform.tfvars
+              echo "db_username = \"$(DB_USERNAME)\"" >> terraform.tfvars
+              echo "db_password = \"$(DB_PASSWORD)\"" >> terraform.tfvars
+              echo "db_name = \"$(DB_NAME)\"" >> terraform.tfvars
+              echo "db_schema = \"$(DB_SCHEMA)\"" >> terraform.tfvars
+              echo "jwt_secret_key = \"$(JWT_SECRET_KEY)\"" >> terraform.tfvars
+              echo "sendgrid_api_key = \"$(SENDGRID_API_KEY)\"" >> terraform.tfvars
+            displayName: 'Create terraform.tfvars'
+            workingDirectory: .
 
           # Terraform init
           - script: |
@@ -49,8 +72,14 @@ stages:
             displayName: 'Terraform Init'
             workingDirectory: .
 
+          # Terraform plan
+          - script: |
+              terraform plan -out=tfplan
+            displayName: 'Terraform Plan'
+            workingDirectory: .
+
           # Terraform apply
           - script: |
-              terraform apply -auto-approve
+              terraform apply -auto-approve tfplan
             displayName: 'Terraform Apply'
             workingDirectory: .
