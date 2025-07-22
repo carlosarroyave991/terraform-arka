@@ -1,11 +1,12 @@
-# azure-pipelines.yml para Infraestructura
+# azure-pipelines.yml (repo infra-aws)
+
 trigger:
   branches:
     include:
-      - main                # Dispara on push a main
+      - main
   paths:
     include:
-      - '**/*.tf'          # Sólo si cambian archivos .tf
+      - '**/*.tf'
 
 pr:
   branches:
@@ -18,33 +19,38 @@ variables:
   TF_LOCK_TABLE: terraform-locks
 
 stages:
-- stage: Terraform
-  displayName: '🛠️ Terraform Init & Apply'
-  jobs:
-  - job: Apply
-    pool: ubuntu-latest
-    steps:
-    - checkout: self
+  - stage: Terraform
+    displayName: 'Terraform Init & Apply'
+    jobs:
+      - job: Apply
+        pool: ubuntu-latest
+        steps:
+          # Clonar el repo de infra
+          - checkout: self
 
-    - task: AWSCLI@1
-      inputs:
-        awsCredentials: 'aws-terraform-ecr'   # Service Connection AWS
-        regionName: '$(AWS_REGION)'
+          # Autenticarse en AWS
+          - task: AWSCLI@1
+            inputs:
+              awsCredentials: 'aws-terraform-ecr'
+              regionName: '$(AWS_REGION)'
 
-    - task: TerraformInstaller@1
-      inputs:
-        terraformVersion: '1.5.0'
+          # Instalar Terraform
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: '1.5.0'
 
-    - script: |
-        terraform init \
-          -backend-config="bucket=$(TF_BACKEND_BUCKET)" \
-          -backend-config="key=infra.tfstate" \
-          -backend-config="region=$(AWS_REGION)" \
-          -backend-config="dynamodb_table=$(TF_LOCK_TABLE)"
-      workingDirectory: .
-      displayName: 'Terraform Init'
+          # Terraform init
+          - script: |
+              terraform init \
+                -backend-config="bucket=$(TF_BACKEND_BUCKET)" \
+                -backend-config="key=infra.tfstate" \
+                -backend-config="region=$(AWS_REGION)" \
+                -backend-config="dynamodb_table=$(TF_LOCK_TABLE)"
+            displayName: 'Terraform Init'
+            workingDirectory: .
 
-    - script: |
-        terraform apply -auto-approve
-      workingDirectory: .
-      displayName: 'Terraform Apply'
+          # Terraform apply
+          - script: |
+              terraform apply -auto-approve
+            displayName: 'Terraform Apply'
+            workingDirectory: .
