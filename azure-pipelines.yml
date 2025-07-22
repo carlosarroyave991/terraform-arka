@@ -49,18 +49,29 @@ stages:
             inputs:
               terraformVersion: '1.5.0'
 
+          # Mostrar variables disponibles
+          - script: |
+              echo "Variables disponibles:"
+              echo "AWS_REGION: $(AWS_REGION)"
+              echo "aws_account_id: $(aws_account_id)"
+              echo "environment: $(environment)"
+              echo "db_username: $(db_username)"
+            displayName: 'Debug Variables'
+            workingDirectory: .
+
           # Crear archivo terraform.tfvars
           - script: |
-              # Creamos el tfvars con variables del grupo
-              echo "aws_region       = \"$(AWS_REGION)\"" > terraform.tfvars
-              echo "aws_account_id   = \"$(aws_account_id)\"" >> terraform.tfvars
-              echo "environment      = \"$(environment)\"" >> terraform.tfvars
-              echo "db_username      = \"$(db_username)\"" >> terraform.tfvars
-              echo "db_password      = \"$(db_password)\"" >> terraform.tfvars
-              echo "db_name          = \"$(db_name)\"" >> terraform.tfvars
-              echo "db_schema        = \"$(db_schema)\"" >> terraform.tfvars
-              echo "jwt_secret_key   = \"$(jwt_secret_key)\"" >> terraform.tfvars
-              echo "sendgrid_api_key = \"$(sendgrid_api_key)\"" >> terraform.tfvars
+              cat <<EOF > terraform.tfvars
+              aws_region       = "$(AWS_REGION)"
+              aws_account_id   = "$(aws_account_id)"
+              environment      = "$(environment)"
+              db_username      = "$(db_username)"
+              db_password      = "$(db_password)"
+              db_name          = "$(db_name)"
+              db_schema        = "$(db_schema)"
+              jwt_secret_key   = "$(jwt_secret_key)"
+              sendgrid_api_key = "$(sendgrid_api_key)"
+              EOF
             displayName: 'Create terraform.tfvars'
             workingDirectory: .
 
