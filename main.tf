@@ -42,9 +42,9 @@ module "cloudwatch" {
 module "service_discovery" {
   source = "./modules/service-discovery"
 
-  environment      = var.environment
-  vpc_id           = module.vpc.vpc_id
-  service_configs  = {
+  environment = var.environment
+  vpc_id      = module.vpc.vpc_id
+  service_configs = {
     users     = { port = 8080, cpu = 256, memory = 512 }
     products  = { port = 8081, cpu = 256, memory = 512 }
     inventory = { port = 8082, cpu = 256, memory = 512 }
@@ -214,9 +214,9 @@ output "ecs_outputs" {
 output "lambda_outputs" {
   description = "Todos los outputs del módulo Lambda"
   value = {
-    function_arn    = module.lambda.lambda_function_arn
-    function_name   = module.lambda.lambda_function_name
-    invoke_arn      = module.lambda.lambda_invoke_arn
+    function_arn  = module.lambda.lambda_function_arn
+    function_name = module.lambda.lambda_function_name
+    invoke_arn    = module.lambda.lambda_invoke_arn
   }
 }
 
